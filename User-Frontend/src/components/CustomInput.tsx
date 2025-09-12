@@ -38,7 +38,7 @@ export default function CustomInput({
     if (name === "password") {
       if (!passwordRegex.test(value)) {
         setError(
-          "Password must be at least 8 characters long, and include a mix of uppercase letters, numbers, and symbols."
+          "Password must be at least 8 characters long, and include a mix of uppercase letters, numbers, and symbols.",
         );
       } else {
         setError("");
@@ -64,7 +64,7 @@ export default function CustomInput({
           placeholder={placeholder}
           value={state}
           onChange={handleChange}
-          className={`bg-zinc-100 border rounded-lg outline-none px-2 py-0.5 focus:border-primary transition-colors duration-150 w-full  ease-in-out ${
+          className={`bg-white border rounded-lg outline-none px-2 py-0.5 focus:border-primary transition-colors duration-150 w-full  ease-in-out ${
             error ? "border-red-500" : "border-zinc-400"
           }`}
         />
