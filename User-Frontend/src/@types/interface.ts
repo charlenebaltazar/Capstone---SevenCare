@@ -1,5 +1,5 @@
 export interface IAppointment {
-  _id: number;
+  _id: string;
   patientId: number;
   medicalDepartment:
     | "Consultation"
@@ -21,7 +21,7 @@ export interface IAppointment {
 }
 
 export interface IUser {
-  _id: number;
+  _id: string;
   firstname: string;
   surname: string;
   gender: string;
@@ -30,4 +30,28 @@ export interface IUser {
   email: string;
   phoneNumber: string;
   password: string;
+}
+
+export interface INotifications {
+  _id: string;
+  text: string;
+  createdAt: Date;
+  seen: boolean;
+}
+
+export interface ITransactions {
+  _id: string;
+  appointmentId: string;
+  amount: number;
+  modeOfPayment: string;
+  status: string;
+  createdAt: Date;
+}
+
+export interface IMedicalRecord {
+  _id: string;
+  appointmentId: string;
+  status: string;
+  diagnosis: string;
+  createdAt: Date;
 }
