@@ -4,9 +4,11 @@ import Sidebar from "../../components/Sidebar";
 import { BACKEND_DOMAIN, medicalDepartments } from "../../data/data";
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
+import { useUser } from "../../hooks/useUser";
 
 export default function CreateAppointment() {
   const navigate = useNavigate();
+  const { user } = useUser();
   const [medicalDepartment, setMedicalDepartment] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -14,6 +16,17 @@ export default function CreateAppointment() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [useRegisteredContact, setUseRegisteredContact] = useState(false);
   const [error, setError] = useState("");
+
+  const handleRegisteredContactChange = (checked: boolean) => {
+    setUseRegisteredContact(checked);
+    if (checked && user) {
+      setEmail(user.email || "");
+      setPhoneNumber(user.phoneNumber || "");
+    } else {
+      setEmail("");
+      setPhoneNumber("");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,9 +37,7 @@ export default function CreateAppointment() {
       time,
       email,
       phoneNumber,
-      useRegisteredContact,
     };
-
     console.log(appointmentData);
 
     try {
@@ -61,7 +72,7 @@ export default function CreateAppointment() {
   };
 
   return (
-    <main className="flex flex-col w-full h-screen font-roboto pt-18 pl-56 bg-zinc-100 text-zinc-900">
+    <main className="flex flex-col w-full h-screen font-roboto pt-18 pl-56 bg-bg-color text-zinc-900">
       <Header2 />
       <Sidebar />
       <div className="h-full  w-full p-5 flex flex-col">
@@ -80,8 +91,8 @@ export default function CreateAppointment() {
             Which medical department would you like to make an appointment for?
           </p>
           <section className="grid grid-cols-3 grid-rows-3 gap-3">
-            {medicalDepartments.map((department) => (
-              <div className="flex flex-row items-center gap-2">
+            {medicalDepartments.map((department, i) => (
+              <div key={i} className="flex flex-row items-center gap-2">
                 <input
                   type="radio"
                   name="medicalDepartment"
@@ -106,7 +117,7 @@ export default function CreateAppointment() {
               name="appointmentDate"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="px-2 py-1 bg-zinc-100 rounded-lg outline-none border border-transparent focus:border-primary duration-150 ease-in-out"
+              className="px-2 py-1 bg-white rounded-lg outline-none border border-transparent focus:border-primary duration-150 ease-in-out"
             />
           </div>
           <div className="flex flex-row gap-3 mt-2">
@@ -117,7 +128,7 @@ export default function CreateAppointment() {
               name="appointmentTime"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="px-2 py-1 bg-zinc-100 rounded-lg outline-none border border-transparent focus:border-primary duration-150 ease-in-out"
+              className="px-2 py-1 bg-white rounded-lg outline-none border border-transparent focus:border-primary duration-150 ease-in-out"
             />
           </div>
 
@@ -131,7 +142,7 @@ export default function CreateAppointment() {
               name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="px-2 py-1 bg-zinc-100 rounded-lg outline-none border border-transparent focus:border-primary duration-150 ease-in-out"
+              className="px-2 py-1 bg-white rounded-lg outline-none border border-transparent focus:border-primary duration-150 ease-in-out"
             />
           </div>
           <div className="flex flex-row gap-3 mt-2">
@@ -143,7 +154,7 @@ export default function CreateAppointment() {
               id="phoneNumber"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
-              className="px-2 py-1 bg-zinc-100 rounded-lg outline-none border border-transparent focus:border-primary duration-150 ease-in-out"
+              className="px-2 py-1 bg-white rounded-lg outline-none border border-transparent focus:border-primary duration-150 ease-in-out"
             />
           </div>
           <div className="flex flex-row items-center gap-1 w-full">
@@ -152,7 +163,7 @@ export default function CreateAppointment() {
               name="registeredContact"
               id="registeredContact"
               checked={useRegisteredContact}
-              onChange={(e) => setUseRegisteredContact(e.target.checked)}
+              onChange={(e) => handleRegisteredContactChange(e.target.checked)}
             />
             <label htmlFor="registeredContact" className="text-sm">
               Use registered contact details
