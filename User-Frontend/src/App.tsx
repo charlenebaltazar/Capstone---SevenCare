@@ -11,6 +11,12 @@ import HomePage from "./pages/app/homePage";
 import CreateAppointment from "./pages/app/createAppointment";
 import ViewAppointments from "./pages/app/viewAppointments";
 import { UserProvider } from "./context/userContext";
+import Notification from "./pages/app/notifications";
+import ViewTransactions from "./pages/app/viewTransactions";
+import ViewMedicalRecord from "./pages/app/viewMedicalRecord";
+import ViewReceipt from "./pages/app/viewReceipt";
+import ViewMedicalRecordList from "./pages/app/viewMedicalRecordList";
+import Profile from "./pages/app/profile";
 
 export default function App() {
   return (
@@ -33,6 +39,12 @@ export default function App() {
           <Route path="/home" element={<HomePage />} />
           <Route path="/appointments" element={<ViewAppointments />} />
           <Route path="/appointments/create" element={<CreateAppointment />} />
+          <Route path="/transactions" element={<ViewTransactions />} />
+          <Route path="/transactions/:id/receipt" element={<ViewReceipt />} />
+          <Route path="/medical-records" element={<ViewMedicalRecordList />} />
+          <Route path="/medical-records/:id" element={<ViewMedicalRecord />} />
+          <Route path="/notifications" element={<Notification />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </UserProvider>
     </BrowserRouter>
