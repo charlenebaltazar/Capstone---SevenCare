@@ -9,7 +9,7 @@ export default function ContactUs() {
   const [content, setContent] = useState("");
 
   return (
-    <main className="flex flex-col w-full h-screen font-roboto pt-18 bg-zinc-100">
+    <main className="flex flex-col w-full h-screen font-roboto pt-18 bg-bg-color">
       <Header active="contactUs" />
       <section className="flex flex-col flex-1 w-full items-center">
         <div className="flex flex-col items-center top-18">
