@@ -7,7 +7,7 @@ export default function HomePage() {
   const { user } = useUser();
 
   return (
-    <main className="flex flex-col w-full h-screen font-roboto pt-18 pl-56 bg-zinc-100 text-zinc-900">
+    <main className="flex flex-col w-full h-screen font-roboto pt-18 pl-56 bg-bg-color text-zinc-900">
       <Header2 />
       <Sidebar />
       <div className="h-full  w-full p-5 flex flex-col">
@@ -37,7 +37,7 @@ export default function HomePage() {
             <p className="font-ribeye">My Appointment</p>
           </Link>
           <Link
-            to=""
+            to="/transactions"
             className="border border-zinc-400 rounded-xl flex flex-col justify-center items-center gap-3 hover:scale-105 transition-all duration-150"
           >
             <img src="/assets/icons/transaction.png" alt="" />
@@ -46,14 +46,14 @@ export default function HomePage() {
 
           <div className="col-span-3 flex flex-row justify-around">
             <Link
-              to=""
+              to="/profile"
               className="border border-zinc-400 rounded-xl flex flex-col justify-center items-center gap-3 w-1/3 hover:scale-105 transition-all duration-150"
             >
               <img src="/assets/icons/transaction.png" alt="" />
               <p className="font-ribeye">My Profile</p>
             </Link>
             <Link
-              to=""
+              to="/medical-records"
               className="border border-zinc-400 rounded-xl flex flex-col justify-center items-center gap-3 w-1/3 hover:scale-105 transition-all duration-150"
             >
               <img src="/assets/icons/transaction.png" alt="" />
