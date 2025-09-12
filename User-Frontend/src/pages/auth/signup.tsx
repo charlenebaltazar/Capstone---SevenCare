@@ -62,7 +62,7 @@ export default function Signup() {
   };
 
   return (
-    <main className="flex flex-col w-full h-screen bg-zinc-100">
+    <main className="flex flex-col w-full h-screen bg-bg-color">
       <section className="w-full flex-1 p-8">
         <div className="bg-primaryLight/30 h-full w-full rounded-lg font-roboto text-zinc-900 py-3 px-5 flex flex-col gap-5 justify-center items-center">
           <header className="flex flex-col items-center">
