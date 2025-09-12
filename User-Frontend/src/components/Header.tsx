@@ -9,10 +9,8 @@ export default function Header({ active }: { active: string }) {
     refreshUser();
   }, []);
 
-  console.log(user);
-
   return (
-    <header className="fixed top-0 w-full flex flex-row justify-between items-center pt-2 pb-0.5 px-20 z-50 bg-zinc-100">
+    <header className="fixed top-0 w-full flex flex-row justify-between items-center pt-2 pb-0.5 px-20 z-50 bg-[#FBFBFB]">
       <div className="flex flex-row  items-center">
         <img src="/assets/icons/icon.png" alt="icon" className="w-16" />
         <h2 className="text-primary text-xl font-extrabold">SevenCare</h2>
