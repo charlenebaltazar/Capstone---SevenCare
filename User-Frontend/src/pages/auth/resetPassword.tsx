@@ -13,7 +13,7 @@ export default function ResetPassword() {
   };
 
   return (
-    <main className="flex flex-col w-full h-screen font-roboto bg-zinc-100">
+    <main className="flex flex-col w-full h-screen font-roboto bg-bg-color">
       <div className="flex-1 w-full flex justify-center items-center">
         <form
           onSubmit={handleSubmit}
