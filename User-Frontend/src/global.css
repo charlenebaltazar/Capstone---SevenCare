@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg-color: #efefef;
+  --color-bg-color: #ffffff;
   --color-primary: #458dfc;
   --color-primaryLight: #6cbcfc;
   --font-manrope: "Manrope", sans-serif;
