@@ -9,7 +9,7 @@ export default function ForgotPassword() {
   const [code, setCode] = useState("");
 
   return (
-    <main className="flex flex-col w-full h-screen font-roboto bg-zinc-100">
+    <main className="flex flex-col w-full h-screen font-roboto bg-bg-color">
       <div className="flex-1 w-full flex justify-center items-center relative overflow-hidden">
         <div
           className={`absolute transition-transform duration-500 ease-in-out w-full flex justify-center ${
