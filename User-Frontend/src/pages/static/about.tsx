@@ -4,7 +4,7 @@ import { whyChooseUs } from "../../data/data";
 
 export default function About() {
   return (
-    <main className="flex flex-col w-full h-screen font-roboto bg-zinc-100">
+    <main className="flex flex-col w-full h-screen font-roboto bg-bg-color">
       <Header active="about" />
       <section className="flex-1 flex w-full flex-row justify-center items-center gap-14 relative">
         <div className="flex flex-col items-center absolute top-18">
