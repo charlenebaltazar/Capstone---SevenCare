@@ -3,7 +3,7 @@ import Header from "../../components/Header";
 
 export default function Services() {
   return (
-    <main className="flex flex-col w-full h-auto font-roboto pt-18 bg-zinc-100">
+    <main className="flex flex-col w-full h-auto font-roboto pt-18 bg-bg-color">
       <Header active="services" />
       <section className="h-screen flex w-full flex-col items-center gap-3 relative">
         <div className="flex flex-col items-center">
