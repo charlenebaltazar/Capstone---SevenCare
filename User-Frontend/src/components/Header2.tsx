@@ -7,7 +7,7 @@ export default function Header2() {
   const capitalize = (str: string) => str.charAt(0).toUpperCase();
 
   return (
-    <header className="fixed top-0 left-0 w-full flex flex-row justify-between items-center pt-2 pb-0.5 px-20 z-50 bg-zinc-100 border-b border-b-zinc-300">
+    <header className="fixed top-0 left-0 w-full flex flex-row justify-between items-center pt-2 pb-0.5 px-20 z-50 bg-[#FBFBFB] border-b border-b-zinc-300">
       <img src="/assets/icons/icon.png" alt="icon" className="w-16" />
 
       <Searchbar />
