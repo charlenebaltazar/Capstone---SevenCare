@@ -1,16 +1,7 @@
 export interface IAppointment {
   _id: string;
   patientId: number;
-  medicalDepartment:
-    | "Consultation"
-    | "Vaccination"
-    | "Medical Certificate"
-    | "Laboratory"
-    | "Holistic Care"
-    | "Circumcision/TULI"
-    | "Medical Check Up"
-    | "Prenatal Check Up"
-    | "Family Planning";
+  medicalDepartment: string[];
   schedule: Date;
   email: string;
   phoneNumber: string;

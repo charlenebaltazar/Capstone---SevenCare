@@ -21,7 +21,7 @@ export default function HomePage() {
           </h2>
         </header>
 
-        <section className="grid grid-cols-3 gap-8 grid-rows-2 w-full flex-1 mt-3">
+        <section className="grid grid-cols-2 gap-8 grid-rows-2 w-full flex-1 mt-3">
           <Link
             to="/appointments/create"
             className="border border-zinc-400 rounded-xl flex flex-col justify-center items-center gap-3 hover:scale-105 transition-all duration-150"
@@ -36,13 +36,6 @@ export default function HomePage() {
             <img src="/assets/icons/list.png" alt="" />
             <p className="font-ribeye">My Appointment</p>
           </Link>
-          <Link
-            to="/transactions"
-            className="border border-zinc-400 rounded-xl flex flex-col justify-center items-center gap-3 hover:scale-105 transition-all duration-150"
-          >
-            <img src="/assets/icons/transaction.png" alt="" />
-            <p className="font-ribeye">My Transaction</p>
-          </Link>
 
           <div className="col-span-3 flex flex-row justify-around">
             <Link
@@ -51,13 +44,6 @@ export default function HomePage() {
             >
               <img src="/assets/icons/transaction.png" alt="" />
               <p className="font-ribeye">My Profile</p>
-            </Link>
-            <Link
-              to="/medical-records"
-              className="border border-zinc-400 rounded-xl flex flex-col justify-center items-center gap-3 w-1/3 hover:scale-105 transition-all duration-150"
-            >
-              <img src="/assets/icons/transaction.png" alt="" />
-              <p className="font-ribeye">My Medical Records</p>
             </Link>
           </div>
         </section>

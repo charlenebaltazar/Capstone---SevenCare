@@ -17,9 +17,11 @@ export default function Signup() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     const userData = {
       firstname,
@@ -58,6 +60,8 @@ export default function Signup() {
       } else {
         setError("An unexpected error occurred.");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -249,9 +253,16 @@ export default function Signup() {
 
             <button
               type="submit"
-              className="bg-primary rounded-xl w-full py-1.5 mt-2.5 text-zinc-200 font-bold cursor-pointer"
+              disabled={loading}
+              className={`bg-primary rounded-xl w-full py-1.5 mt-2.5 text-zinc-200 font-bold cursor-pointer ${
+                loading ? "cursor-not-allowed" : "cursor-pointer"
+              }`}
             >
-              Sign Up
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                "Sign Up"
+              )}
             </button>
 
             <footer className="w-full py-1 justify-center flex flex-row items-center gap-1 text-zinc-800 text-xs">

@@ -1,16 +1,14 @@
 import Header2 from "../../components/Header2";
 import Sidebar from "../../components/Sidebar";
-import { Trash2, X } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { IAppointment } from "../../@types/interface";
 import axios from "axios";
 import { BACKEND_DOMAIN } from "../../data/data";
 import dayjs from "dayjs";
 import Loading from "../../components/Loading";
-import { Link } from "react-router-dom";
 
 export default function ViewAppointments() {
-  const [showPaymentOptionModal, setShowPaymentOptionModal] = useState(false);
   const [showDeleteAppointmentModal, setShowDeleteAppointmentModal] =
     useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState("");
@@ -42,24 +40,16 @@ export default function ViewAppointments() {
       <div className="h-full  w-full p-5">
         <form className="flex  flex-col w-full h-full flex-1 mt-3">
           <h1 className="font-bold text-2xl">My Appointments</h1>
-          <header className="grid grid-cols-5 mt-3 font-semibold">
+          <header className="grid grid-cols-6 mt-3 font-semibold">
             <h3>Reference Id</h3>
             <h3>Department</h3>
-            <h3>Date and Time</h3>
+            <h3>Date</h3>
+            <h3>Time</h3>
             <h3>Status</h3>
             <h3>Actions</h3>
           </header>
 
           <section className="flex flex-col gap-3 h-full w-full overflow-y-auto relative">
-            {/* Payment Option Modal */}
-            {selectedAppointment && showPaymentOptionModal && (
-              <PaymentOptionModal
-                selectedAppointment={selectedAppointment}
-                setSelectedAppointment={setSelectedAppointment}
-                setShowPaymentOptionModal={setShowPaymentOptionModal}
-              />
-            )}
-
             {/* Delete Appointment Modal */}
             {selectedAppointment && showDeleteAppointmentModal && (
               <DeleteAppointmentModal
@@ -76,23 +66,37 @@ export default function ViewAppointments() {
               appointments.map((appt) => (
                 <div
                   key={appt._id}
-                  className="grid grid-cols-5 mt-3 bg-primaryLight/15 rounded-xl p-3"
+                  className="grid grid-cols-6 mt-3 bg-primaryLight/15 rounded-xl p-3"
                 >
                   <p>{appt._id}</p>
-                  <p>{appt.medicalDepartment}</p>
-                  <p>{dayjs(appt.schedule).format("MM/DD/YY, h:mm A")}</p>
-                  <p>{appt.status}</p>
+                  <p>{appt.medicalDepartment.join(", ")}</p>
+                  <p>
+                    {
+                      dayjs(appt.schedule)
+                        .format("MM/DD/YY, h:mm A")
+                        .split(", ")[0]
+                    }
+                  </p>
+                  <p>
+                    {
+                      dayjs(appt.schedule)
+                        .format("MM/DD/YY, h:mm A")
+                        .split(", ")[1]
+                    }
+                  </p>
+                  <p
+                    className={`font-bold ${
+                      appt.status === "Pending"
+                        ? "text-primary"
+                        : appt.status === "Approved"
+                        ? "text-green-400"
+                        : "text-red-500"
+                    }`}
+                  >
+                    {appt.status}
+                  </p>
                   <div className="flex gap-2 items-center">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedAppointment(appt._id);
-                        setShowPaymentOptionModal(true);
-                      }}
-                      className="bg-[#458FF6] rounded-lg px-2 font-bold text-white cursor-pointer"
-                    >
-                      Pay Now
-                    </button>
+                    <img src="/assets/icons/chat.png" alt="" />
                     <button
                       type="button"
                       onClick={() => {
@@ -111,55 +115,6 @@ export default function ViewAppointments() {
         </form>
       </div>
     </main>
-  );
-}
-
-function PaymentOptionModal({
-  selectedAppointment,
-  setSelectedAppointment,
-  setShowPaymentOptionModal,
-}: {
-  selectedAppointment: string;
-  setSelectedAppointment: React.Dispatch<React.SetStateAction<string>>;
-  setShowPaymentOptionModal: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
-  console.log("selected appointment: ", selectedAppointment);
-
-  return (
-    <dialog className="h-auto w-[60%] flex-col flex p-4 pb-5 rounded-lg bg-[#E9F5FF] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-      <button
-        type="button"
-        onClick={() => {
-          setSelectedAppointment("");
-          setShowPaymentOptionModal(false);
-        }}
-        className="p-3 rounded-full bg-zinc-200 absolute -right-2 -top-2 cursor-pointer"
-      >
-        <X />
-      </button>
-      <h2 className="font-bold text-2xl">Payment</h2>
-
-      <section className="px-10 flex flex-col gap-5 mt-5">
-        <Link
-          to="/"
-          className="bg-[#3B3F0F] flex justify-center items-center font-bold text-white py-3 rounded-md cursor-pointer"
-        >
-          Cash
-        </Link>
-        <Link
-          to="/"
-          className="bg-[#3B3F0F] flex justify-center items-center font-bold text-white py-3 rounded-md cursor-pointer"
-        >
-          Credit Card
-        </Link>
-        <Link
-          to="/"
-          className="bg-[#3B3F0F] flex justify-center items-center font-bold text-white py-3 rounded-md cursor-pointer"
-        >
-          Paypal
-        </Link>
-      </section>
-    </dialog>
   );
 }
 

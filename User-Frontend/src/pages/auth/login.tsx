@@ -11,9 +11,11 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     const userData = {
       email,
@@ -45,6 +47,8 @@ export default function Login() {
       } else {
         setError("An unexpected error occurred.");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -110,9 +114,16 @@ export default function Login() {
 
             <button
               type="submit"
-              className="bg-primary rounded-xl w-full py-1.5  text-zinc-200 font-bold cursor-pointer"
+              disabled={loading}
+              className={`bg-primary rounded-xl w-full py-1.5  text-zinc-200 font-bold justify-center items-center flex ${
+                loading ? "cursor-not-allowed" : "cursor-pointer"
+              }`}
             >
-              Log In
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                "Log In"
+              )}
             </button>
 
             <footer className="w-full py-1 justify-center flex flex-row items-center gap-1 text-zinc-800 text-xs">

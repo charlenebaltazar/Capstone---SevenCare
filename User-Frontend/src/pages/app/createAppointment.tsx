@@ -1,42 +1,38 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Header2 from "../../components/Header2";
 import Sidebar from "../../components/Sidebar";
 import { BACKEND_DOMAIN, medicalDepartments } from "../../data/data";
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
 import { useUser } from "../../hooks/useUser";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import "react-datepicker/dist/react-datepicker.css";
+import dayjs, { Dayjs } from "dayjs";
+import {
+  LocalizationProvider,
+  StaticDatePicker,
+  StaticTimePicker,
+} from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 export default function CreateAppointment() {
   const navigate = useNavigate();
   const { user } = useUser();
-  const [medicalDepartment, setMedicalDepartment] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [useRegisteredContact, setUseRegisteredContact] = useState(false);
+  const [activePage, setActivePage] = useState(1);
+  const [medicalDepartment, setMedicalDepartment] = useState<string[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
+  const [selectedTime, setSelectedTime] = useState<Dayjs | null>(dayjs());
   const [error, setError] = useState("");
-
-  const handleRegisteredContactChange = (checked: boolean) => {
-    setUseRegisteredContact(checked);
-    if (checked && user) {
-      setEmail(user.email || "");
-      setPhoneNumber(user.phoneNumber || "");
-    } else {
-      setEmail("");
-      setPhoneNumber("");
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const appointmentData = {
       medicalDepartment,
-      date,
-      time,
-      email,
-      phoneNumber,
+      date: selectedDate ? selectedDate.format("YYYY-MM-DD") : null,
+      time: selectedTime ? selectedTime.format("HH:mm") : null,
+      email: user?.email,
+      phoneNumber: user?.phoneNumber,
     };
     console.log(appointmentData);
 
@@ -75,123 +71,132 @@ export default function CreateAppointment() {
     <main className="flex flex-col w-full h-screen font-roboto pt-18 pl-56 bg-bg-color text-zinc-900">
       <Header2 />
       <Sidebar />
-      <div className="h-full  w-full p-5 flex flex-col">
-        <header className="border-2 border-[#458FF6] rounded-lg flex justify-center items-center">
-          <p className="text-center py-2">
-            Please review the details of your appointment. Keep in mind that
-            this appointment is non - transferable.
-          </p>
+      <div className="h-full  w-full p-8 flex flex-col">
+        <header>
+          <h1 className="text-2xl font-bold">{`Hello, ${
+            user?.firstname || ""
+          } ${user?.surname || ""}`}</h1>
+          <h2>
+            Welcome to{" "}
+            <span className="text-primary font-bold">SevenCare!</span>
+          </h2>
         </header>
 
         <form
           onSubmit={handleSubmit}
-          className="flex  flex-col w-full flex-1 mt-3 bg-primaryLight/15 rounded-xl p-3"
+          className="flex  flex-col w-full mt-10 border border-zinc-400"
         >
-          <p className="font-bold">
-            Which medical department would you like to make an appointment for?
-          </p>
-          <section className="grid grid-cols-3 grid-rows-3 gap-3">
-            {medicalDepartments.map((department, i) => (
-              <div key={i} className="flex flex-row items-center gap-2">
-                <input
-                  type="radio"
-                  name="medicalDepartment"
-                  value={department.label}
-                  checked={medicalDepartment === department.label}
-                  onChange={(e) => setMedicalDepartment(e.target.value)}
-                  id={department.name}
-                />
-                <label htmlFor={department.name}>{department.label}</label>
-              </div>
-            ))}
+          <header className="flex items-center justify-between text-xl bg-primary p-3 text-white">
+            <p>
+              Olympus Medical Clinic: <b>Book Online</b>
+            </p>
+
+            {activePage === 1 ? (
+              <button
+                type="button"
+                onClick={() => setActivePage(2)}
+                className="flex items-center cursor-pointer"
+              >
+                Next <ChevronRight />
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setActivePage(1)}
+                className="flex items-center cursor-pointer"
+              >
+                <ChevronLeft />
+                Go Back
+              </button>
+            )}
+          </header>
+
+          <section className="grid grid-cols-2 p-5 bg-zinc-100 border-b-zinc-400 border-b">
+            <h3 className="flex justify-center items-center">
+              <div
+                className={`p-2 rounded-full w-10 flex items-center justify-center mr-2 ${
+                  activePage === 1 ? "bg-primary text-white" : "bg-zinc-400"
+                }`}
+              >
+                1
+              </div>{" "}
+              Confirm Date & Time
+            </h3>
+            <h3 className="flex justify-center items-center">
+              <div
+                className={`p-2 rounded-full w-10 flex items-center justify-center mr-2 ${
+                  activePage === 2 ? "bg-primary text-white" : "bg-zinc-400"
+                }`}
+              >
+                2
+              </div>{" "}
+              Select Service
+            </h3>
           </section>
 
-          <p className="font-bold mt-3">
-            What date and time works best for you?
-          </p>
-          <div className="flex flex-row gap-3">
-            <label htmlFor="appointmentDate">Date</label>
-            <input
-              type="date"
-              id="appointmentDate"
-              name="appointmentDate"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="px-2 py-1 bg-white rounded-lg outline-none border border-transparent focus:border-primary duration-150 ease-in-out"
-            />
-          </div>
-          <div className="flex flex-row gap-3 mt-2">
-            <label htmlFor="appointmentTime">Time</label>
-            <input
-              type="time"
-              id="appointmentTime"
-              name="appointmentTime"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              className="px-2 py-1 bg-white rounded-lg outline-none border border-transparent focus:border-primary duration-150 ease-in-out"
-            />
-          </div>
-
-          <p className="font-bold mt-3">Where should we contact you?</p>
-          <div className="flex flex-row gap-3">
-            <label htmlFor="email">Email Address</label>
-            <input
-              type="email"
-              disabled={useRegisteredContact}
-              id="email"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="px-2 py-1 bg-white rounded-lg outline-none border border-transparent focus:border-primary duration-150 ease-in-out"
-            />
-          </div>
-          <div className="flex flex-row gap-3 mt-2">
-            <label htmlFor="phoneNumber">Phone Number</label>
-            <input
-              type="text"
-              disabled={useRegisteredContact}
-              name="phoneNumber"
-              id="phoneNumber"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              className="px-2 py-1 bg-white rounded-lg outline-none border border-transparent focus:border-primary duration-150 ease-in-out"
-            />
-          </div>
-          <div className="flex flex-row items-center gap-1 w-full">
-            <input
-              type="checkbox"
-              name="registeredContact"
-              id="registeredContact"
-              checked={useRegisteredContact}
-              onChange={(e) => handleRegisteredContactChange(e.target.checked)}
-            />
-            <label htmlFor="registeredContact" className="text-sm">
-              Use registered contact details
-            </label>
-          </div>
-
-          {error && (
-            <p className="text-red-500 w-full flex justify-center items-center mt-3">
-              {error}
-            </p>
+          {activePage === 1 && (
+            <section className="w-full grid grid-cols-2">
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <div className="p-4 bg-primary/5">
+                  <StaticDatePicker
+                    defaultValue={dayjs("2022-04-17")}
+                    value={selectedDate}
+                    onChange={(newDate) => setSelectedDate(newDate)}
+                  />
+                </div>
+                <div className="p-4 bg-primary/5">
+                  <StaticTimePicker
+                    orientation="portrait"
+                    value={selectedTime}
+                    onChange={(newTime) => setSelectedTime(newTime)}
+                  />
+                </div>
+              </LocalizationProvider>
+            </section>
           )}
 
-          <section className="w-full flex flex-row justify-end items-center mt-10">
-            <div className="flex flex-row items-center gap-3">
-              <Link
-                to={"/home"}
-                className="bg-primary py-2 px-4 text-zinc-100 font-bold rounded-xl cursor-pointer"
-              >
-                Cancel
-              </Link>
+          {activePage === 2 && (
+            <section className="h- mt-5">
+              <h3 className="p-3 font-bold text-xl flex items-center gap-4">
+                {" "}
+                <img src="/assets/icons/pencil.png" alt="" /> Select Service(s):{" "}
+              </h3>
+              <div className="p-3 grid grid-cols-3 grid-rows-3 gap-3 mt-4">
+                {medicalDepartments.map((department, i) => (
+                  <div key={i} className="flex flex-row items-center gap-2">
+                    <input
+                      type="checkbox"
+                      name="medicalDepartment"
+                      value={department.label}
+                      checked={medicalDepartment.includes(department.label)}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (medicalDepartment.includes(value)) {
+                          setMedicalDepartment(
+                            medicalDepartment.filter((d) => d !== value),
+                          );
+                        } else {
+                          if (medicalDepartment.length < 3) {
+                            setMedicalDepartment([...medicalDepartment, value]);
+                          }
+                        }
+                      }}
+                      id={department.name}
+                    />
+                    <label htmlFor={department.name}>{department.label}</label>
+                  </div>
+                ))}
+              </div>
               <button
                 type="submit"
-                className="bg-primary py-2 px-4 text-zinc-100 font-bold rounded-xl cursor-pointer"
+                className="bg-green-800 w-full text-white font-bold py-3 mt-5 cursor-pointer flex items-center justify-center gap-2"
               >
-                Submit
+                SUBMIT <ArrowRight />
               </button>
-            </div>
-          </section>
+            </section>
+          )}
+
+          {error && <p className="text-red-500">{error}</p>}
         </form>
       </div>
     </main>
