@@ -18,7 +18,7 @@ export default function Sidebar() {
   }, []);
 
   return (
-    <nav className="w-76 h-screen fixed z-30 left-0 top-0 py-10 px-5 flex flex-col justify-between items-center text-sm border-r-12 border-r-[#B3B3B3] overflow-auto">
+    <nav className="w-76 h-screen fixed z-30 left-0 top-0 py-10 px-5 flex flex-col justify-between items-center text-sm border-r-12 border-r-[#B3B3B3] overflow-auto no-scrollbar">
       <div className="flex flex-col  items-center border-b border-b-zinc-300 pb-5">
         <img
           src={`/assets/icons/${user?.gender === "male" ? "boy" : "girl"}.png`}
@@ -33,7 +33,7 @@ export default function Sidebar() {
         <b className="text-[#064712] text-2xl">Front Desk</b>
       </div>
 
-      <div className="flex flex-col justify-center gap-8 text-2xl">
+      <div className="flex flex-col justify-center gap-8 text-2xl py-3">
         <Link
           to="/dashboard"
           className="flex items-center gap-6 hover:text-primary hover:scale-105 transition-all duration-150"
