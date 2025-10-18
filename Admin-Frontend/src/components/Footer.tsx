@@ -7,7 +7,7 @@ export default function Footer() {
         <Link to={"/about"}>About</Link> |{" "}
         <Link to={"/contact-us"}>Contact</Link>
       </div>
-      <p>© Baltazar, Caayao, Celestra, Dabalos, Lavitoria</p>
+      <p>© Baltazar, Caayao, Celestra, Dabalos, Dizon, Lavitoria</p>
     </footer>
   );
 }
