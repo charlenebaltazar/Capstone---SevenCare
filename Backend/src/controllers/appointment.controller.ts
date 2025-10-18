@@ -25,19 +25,22 @@ export const createAppointment = catchAsync(
 
     res.status(201).json({
       status: "Success",
-      data: newAppointment,
+      data: normalizeAppointments([newAppointment])[0],
     });
   },
 );
 
 export const getAppointments = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const appointments = await Appointment.find({
+    let appointments = await Appointment.find({
       patientId: req.user._id,
       isDeleted: false,
     }).sort({ schedule: 1 });
 
-    res.status(200).json({ status: "Success", data: appointments });
+    res.status(200).json({
+      status: "Success",
+      data: normalizeAppointments(appointments),
+    });
   },
 );
 
@@ -57,3 +60,131 @@ export const deleteAppointment = catchAsync(
       .json({ status: "Success", msg: "Appointment successfully deleted" });
   },
 );
+
+export const getAllPendingAppointments = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    let appointments = await Appointment.find({
+      isDeleted: false,
+      status: "Pending",
+    })
+      .sort({ schedule: 1 })
+      .populate("patientId", "firstname surname");
+
+    res.status(200).json({
+      status: "Success",
+      results: appointments.length,
+      data: normalizeAppointments(appointments),
+    });
+  },
+);
+
+export const getTodayApprovedAppointments = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const now = new Date();
+
+    // Compute the start/end of the day in UTC+8
+    const utc8Offset = 8 * 60 * 60 * 1000; // milliseconds
+    const localNow = new Date(now.getTime() + utc8Offset);
+
+    const startOfDayLocal = new Date(
+      Date.UTC(localNow.getUTCFullYear(), localNow.getUTCMonth(), localNow.getUTCDate(), 0, 0, 0, 0),
+    );
+    const endOfDayLocal = new Date(
+      Date.UTC(localNow.getUTCFullYear(), localNow.getUTCMonth(), localNow.getUTCDate(), 23, 59, 59, 999),
+    );
+
+    const appointments = await Appointment.find({
+      isDeleted: false,
+      status: "Approved",
+      schedule: { $gte: startOfDayLocal, $lte: endOfDayLocal },
+    })
+      .sort({ schedule: 1 })
+      .populate("patientId", "firstname surname");
+
+    res.status(200).json({
+      status: "Success",
+      results: appointments.length,
+      data: normalizeAppointments(appointments),
+    });
+  },
+);
+
+
+export const getAllAppointments = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    let appointments = await Appointment.find({ isDeleted: false })
+      .sort({
+        schedule: 1,
+      })
+      .populate("patientId", "firstname surname");
+
+    res.status(200).json({
+      status: "Success",
+      results: appointments.length,
+      data: normalizeAppointments(appointments),
+    });
+  },
+);
+
+export const updateAppointmentStatus = async (req: Request, res: Response) => {
+  try {
+    const { id, action } = req.params;
+
+    const appointment = await Appointment.findById(id);
+    if (!appointment) {
+      return res.status(404).json({ message: "Appointment not found" });
+    }
+
+    if (action === "approve") {
+      appointment.status = "Approved";
+    } else if (action === "decline") {
+      appointment.status = "Declined";
+    } else if (action === "completed") {
+      appointment.status = "Completed";
+    } else if (action === "noshow") {
+      appointment.status = "No Show";
+    } else {
+      return res.status(400).json({ message: "Invalid action" });
+    }
+
+    await appointment.save();
+    res.status(200).json({
+      message: "Appointment updated",
+      appointment: normalizeAppointments([appointment])[0],
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const getCancelledAppointments = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const appointments = await Appointment.find({
+      isDeleted: false,
+      status: { $in: ["Cancelled", "No Show"] },
+    }).sort({ schedule: 1 });
+
+    res.status(200).json({
+      status: "Success",
+      results: appointments.length,
+      data: normalizeAppointments(appointments),
+    });
+  },
+);
+
+function normalizeAppointments(appts: any[]) {
+  return appts.map((appt) => {
+    const obj = appt.toObject ? appt.toObject() : appt;
+    const date = new Date(obj.schedule);
+
+    date.setHours(date.getHours() - 8);
+    obj.schedule = date.toISOString();
+
+    if (obj.patientId) {
+      obj.patientName = `${obj.patientId.firstname} ${obj.patientId.surname}`;
+      delete obj.patientId;
+    }
+
+    return obj;
+  });
+}
