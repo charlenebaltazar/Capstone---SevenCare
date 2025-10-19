@@ -33,7 +33,6 @@ export default function Signup() {
       email,
       phoneNumber,
       password,
-      role: "user"
     };
 
     try {
