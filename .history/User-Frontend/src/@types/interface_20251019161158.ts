@@ -1,4 +1,4 @@
-export interface IAppointment {
+eexport interface IAppointment {
   _id: string;
   patientId: number;
   medicalDepartment: string[];
