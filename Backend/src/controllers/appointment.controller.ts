@@ -63,15 +63,63 @@ export const deleteAppointment = catchAsync(
 
 export const getAllPendingAppointments = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    let appointments = await Appointment.find({
-      isDeleted: false,
-      status: "Pending",
-    })
-      .sort({ schedule: 1 })
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+    const { status, date, service } = req.query;
+
+    const filter: any = { isDeleted: false, status: "Pending" };
+
+    if (date) {
+      const selectedDate = new Date(date as string);
+      const utc8Offset = 8 * 60 * 60 * 1000;
+      const localNow = new Date(selectedDate.getTime() + utc8Offset);
+
+      const start = new Date(
+        Date.UTC(
+          localNow.getUTCFullYear(),
+          localNow.getUTCMonth(),
+          localNow.getUTCDate(),
+          0,
+          0,
+          0,
+          0,
+        ),
+      );
+      const end = new Date(
+        Date.UTC(
+          localNow.getUTCFullYear(),
+          localNow.getUTCMonth(),
+          localNow.getUTCDate(),
+          23,
+          59,
+          59,
+          999,
+        ),
+      );
+
+      filter.schedule = { $gte: start, $lt: end };
+    }
+
+    if (service) {
+      const serviceArray = Array.isArray(service) ? service : [service];
+      filter.medicalDepartment = { $in: serviceArray };
+    }
+
+    const total = await Appointment.countDocuments(filter);
+
+    const appointments = await Appointment.find(filter)
+      .sort({ schedule: -1 })
+      .skip(skip)
+      .limit(limit)
       .populate("patientId", "firstname surname");
 
     res.status(200).json({
       status: "Success",
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
       results: appointments.length,
       data: normalizeAppointments(appointments),
     });
@@ -82,40 +130,108 @@ export const getTodayApprovedAppointments = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const now = new Date();
 
-    // Compute the start/end of the day in UTC+8
-    const utc8Offset = 8 * 60 * 60 * 1000; // milliseconds
+    const utc8Offset = 8 * 60 * 60 * 1000;
     const localNow = new Date(now.getTime() + utc8Offset);
 
     const startOfDayLocal = new Date(
-      Date.UTC(localNow.getUTCFullYear(), localNow.getUTCMonth(), localNow.getUTCDate(), 0, 0, 0, 0),
+      Date.UTC(
+        localNow.getUTCFullYear(),
+        localNow.getUTCMonth(),
+        localNow.getUTCDate(),
+        0,
+        0,
+        0,
+        0,
+      ),
     );
     const endOfDayLocal = new Date(
-      Date.UTC(localNow.getUTCFullYear(), localNow.getUTCMonth(), localNow.getUTCDate(), 23, 59, 59, 999),
+      Date.UTC(
+        localNow.getUTCFullYear(),
+        localNow.getUTCMonth(),
+        localNow.getUTCDate(),
+        23,
+        59,
+        59,
+        999,
+      ),
     );
 
-    const appointments = await Appointment.find({
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+
+    const filter = {
       isDeleted: false,
       status: "Approved",
       schedule: { $gte: startOfDayLocal, $lte: endOfDayLocal },
-    })
-      .sort({ schedule: 1 })
-      .populate("patientId", "firstname surname");
+    };
+
+    const [appointments, total] = await Promise.all([
+      Appointment.find(filter)
+        .sort({ schedule: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate("patientId", "firstname surname"),
+      Appointment.countDocuments(filter),
+    ]);
 
     res.status(200).json({
       status: "Success",
       results: appointments.length,
+      total,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
       data: normalizeAppointments(appointments),
     });
   },
 );
 
-
 export const getAllAppointments = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    let appointments = await Appointment.find({ isDeleted: false })
-      .sort({
-        schedule: 1,
-      })
+    const { status, date, service } = req.query;
+
+    const filter: any = { isDeleted: false };
+
+    if (status) filter.status = status;
+
+    if (date) {
+      const selectedDate = new Date(date as string);
+      const utc8Offset = 8 * 60 * 60 * 1000;
+      const localDate = new Date(selectedDate.getTime() - utc8Offset);
+
+      const start = new Date(
+        Date.UTC(
+          localDate.getUTCFullYear(),
+          localDate.getUTCMonth(),
+          localDate.getUTCDate(),
+          0,
+          0,
+          0,
+          0,
+        ),
+      );
+      const end = new Date(
+        Date.UTC(
+          localDate.getUTCFullYear(),
+          localDate.getUTCMonth(),
+          localDate.getUTCDate(),
+          23,
+          59,
+          59,
+          999,
+        ),
+      );
+
+      filter.schedule = { $gte: start, $lt: end };
+    }
+
+    if (service) {
+      const serviceArray = Array.isArray(service) ? service : [service];
+      filter.medicalDepartment = { $in: serviceArray };
+    }
+
+    const appointments = await Appointment.find(filter)
+      .sort({ schedule: -1 })
       .populate("patientId", "firstname surname");
 
     res.status(200).json({

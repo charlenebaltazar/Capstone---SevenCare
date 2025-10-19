@@ -91,7 +91,7 @@ function AppointmentSummary() {
             <b className="text-3xl">{summary.cancelled}</b>
             <img src="/assets/icons/calendar3.png" alt="" />
           </header>
-          <p className="text-xl">CANCELLED PATIENTS</p>
+          <p className="text-xl">NO SHOW PATIENTS</p>
         </div>
       </div>
 

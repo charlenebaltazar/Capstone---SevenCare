@@ -142,6 +142,7 @@ export default function CreateAppointment() {
                     defaultValue={dayjs("2022-04-17")}
                     value={selectedDate}
                     onChange={(newDate) => setSelectedDate(newDate)}
+                    slots={{ actionBar: () => null }}
                   />
                 </div>
                 <div className="p-4 bg-primary/5">
@@ -149,6 +150,9 @@ export default function CreateAppointment() {
                     orientation="portrait"
                     value={selectedTime}
                     onChange={(newTime) => setSelectedTime(newTime)}
+                    minTime={dayjs().hour(7).minute(0)}
+                    maxTime={dayjs().hour(16).minute(0)}
+                    slots={{ actionBar: () => null }}
                   />
                 </div>
               </LocalizationProvider>
