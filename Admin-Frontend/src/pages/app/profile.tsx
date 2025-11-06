@@ -5,6 +5,7 @@ import { useUser } from "../../hooks/useUser";
 import CustomInput from "../../components/CustomInput";
 import axios from "axios";
 import { BACKEND_DOMAIN } from "../../data/data";
+import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
   const { user } = useUser();
@@ -15,6 +16,7 @@ export default function Profile() {
   const [email, setEmail] = useState(user?.email || "");
   const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber || "");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   interface UpdateUserPayload {
     firstname: string;
@@ -51,8 +53,8 @@ export default function Profile() {
   };
 
   return (
-    <main className="flex flex-col w-full h-screen font-roboto pt-18 pl-56 bg-bg-color text-zinc-900">
-      <Header2 />
+    <main className="flex flex-col w-full h-screen font-roboto pl-80 p-4 bg-bg-color text-zinc-900 overflow-hidden">
+      <Header2 header="Profile" description="Manage your account details." />
       <Sidebar />
       <form
         onSubmit={handleUpdateUser}
@@ -143,6 +145,7 @@ export default function Profile() {
         <div className="w-[50%] flex justify-between items-center mt-5">
           <button
             type="button"
+            onClick={() => navigate(-1)}
             className="bg-red-500 rounded-lg px-5 py-1 font-bold text-white cursor-pointer"
           >
             Cancel

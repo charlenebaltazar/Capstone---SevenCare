@@ -1,15 +1,21 @@
 import { useUser } from "../hooks/useUser";
 
-export default function Header2() {
+export default function Header2({
+  header,
+  description,
+}: {
+  header: string;
+  description: string;
+}) {
   const { user } = useUser();
 
   return (
     <header className="flex justify-between items-center mb-10">
       <div className="flex flex-col">
-        <h1 className="text-4xl font-bold">Front Desk Dashboard</h1>
+        <h1 className="text-4xl font-bold">Front Desk {header}</h1>
         <h2 className="text-2xl ">{`Welcome, ${
           user?.firstname || ""
-        }! Manage appointments and assist patients.`}</h2>
+        }! ${description}`}</h2>
       </div>
 
       <div className="flex items-center gap-3 text-xl">

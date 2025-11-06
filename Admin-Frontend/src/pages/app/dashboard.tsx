@@ -5,7 +5,7 @@ import { LocalizationProvider, StaticDatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { useEffect, useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { BACKEND_DOMAIN } from "../../data/data";
 import dayjs, { Dayjs } from "dayjs";
 
@@ -27,7 +27,10 @@ export default function DashboardPage() {
     <main className="flex flex-col w-full h-screen font-roboto pl-76 bg-bg-color text-zinc-900">
       <Sidebar />
       <div className="h-full  w-full p-4 flex flex-col">
-        <Header2 />
+        <Header2
+          header="Dashboard"
+          description="Manage appointments and assist patients."
+        />
         <AppointmentSummary />
         <Dashboard />
       </div>
@@ -137,6 +140,45 @@ function Dashboard() {
 }
 
 function AvailableDoctors() {
+  interface Doctor {
+    _id: string;
+    name: string;
+    specialization: string;
+    schedule: Date;
+  }
+
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const res = await axios.get(`${BACKEND_DOMAIN}/api/v1/doctors`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        });
+        setDoctors(res.data.data || []);
+      } catch (e) {
+        console.log(e);
+        if (axios.isAxiosError(e)) {
+          const err = e as AxiosError<{ message?: string }>;
+          setError(err.response?.data?.message ?? "Fetch failed.");
+        } else if (e instanceof Error) {
+          setError(e.message);
+        } else {
+          setError("An unexpected error occurred.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
+
   return (
     <div className="flex flex-col bg-[#E7F0FE] p-3 rounded-xl border border-zinc-300">
       <header className="items-center justify-between flex gap-8">
@@ -146,30 +188,82 @@ function AvailableDoctors() {
         </Link>
       </header>
       <ol className="flex flex-col gap-2 mt-2">
-        <li
-          className="bg-[#DAE1EB] rounded-lg p-2
+        {loading ? (
+          <p className="text-center text-zinc-500">Loading doctors...</p>
+        ) : error ? (
+          <p className="text-center text-red-500">{error}</p>
+        ) : doctors.length === 0 ? (
+          <p className="text-center text-zinc-500">No doctors found.</p>
+        ) : (
+          doctors.slice(0, 2).map((doctor, i) => (
+            <li
+              key={i}
+              className="bg-[#DAE1EB] rounded-lg p-2
               "
-        >
-          <h4 className="text-2xl">Dr. John Doe</h4>
-          <span className="text-red-500">Doctor of OB-Gyne</span>
-          <p>Available Time: 10:00 AM - 6:00 PM</p>
-          <p>Available Day: Monday - Thursday</p>
-        </li>
-        <li
-          className="bg-[#DAE1EB] rounded-lg p-2
-              "
-        >
-          <h4 className="text-2xl">Dr. John Doe</h4>
-          <span className="text-red-500">Doctor of OB-Gyne</span>
-          <p>Available Time: 10:00 AM - 6:00 PM</p>
-          <p>Available Day: Monday - Thursday</p>
-        </li>
+            >
+              <h4 className="text-2xl">{doctor.name}</h4>
+              <span className="text-red-500">{doctor.specialization}</span>
+              <p>
+                <b>Available schedule:</b>{" "}
+                {new Date(
+                  new Date(doctor.schedule).getTime() - 8 * 60 * 60 * 1000,
+                ).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "2-digit",
+                  hour12: true,
+                })}
+              </p>
+            </li>
+          ))
+        )}
       </ol>
     </div>
   );
 }
 
 function AvailableServices() {
+  interface Service {
+    _id: string;
+    name: string;
+    price: number;
+    status: string;
+  }
+
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const res = await axios.get(`${BACKEND_DOMAIN}/api/v1/services`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        });
+        setServices(res.data.data || []);
+      } catch (e) {
+        console.log(e);
+        if (axios.isAxiosError(e)) {
+          const err = e as AxiosError<{ message?: string }>;
+          setError(err.response?.data?.message ?? "Fetch failed.");
+        } else if (e instanceof Error) {
+          setError(e.message);
+        } else {
+          setError("An unexpected error occurred.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
+  }, []);
+
   return (
     <div className="flex flex-col bg-[#E7F0FE] p-3 rounded-xl border border-zinc-300">
       <header className="items-center justify-between flex gap-8">
@@ -179,10 +273,17 @@ function AvailableServices() {
         </Link>
       </header>
       <ul className="flex flex-col gap-1 mt-2">
-        <li>Ultrasound</li>
-        <li>Consultation</li>
-        <li>Family Planning</li>
-        <li>Prenatal Check Up</li>
+        {loading ? (
+          <p className="text-center text-zinc-500">Loading services...</p>
+        ) : error ? (
+          <p className="text-center text-red-500">{error}</p>
+        ) : services.length === 0 ? (
+          <p className="text-center text-zinc-500">No services found.</p>
+        ) : (
+          services
+            .slice(0, 5)
+            .map((service, i) => <li key={i}>{service.name}</li>)
+        )}
       </ul>
     </div>
   );

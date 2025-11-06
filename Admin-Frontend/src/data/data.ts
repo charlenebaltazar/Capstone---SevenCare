@@ -1,4 +1,4 @@
-export const BACKEND_DOMAIN = "https://sevencare-backend.onrender.com";
+export const BACKEND_DOMAIN = "https://sevencare-backend-jx9v.onrender.com";
 
 export const whyChooseUs = [
   "Transparent Pricing",
