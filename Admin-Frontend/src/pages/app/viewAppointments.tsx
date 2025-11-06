@@ -24,7 +24,10 @@ export default function ViewAppointments() {
 
   return (
     <main className="flex flex-col w-full h-screen font-roboto pl-80 p-4 bg-bg-color text-zinc-900 overflow-hidden">
-      <Header2 />
+      <Header2
+        header="Appointments"
+        description="Manage appointments and assist patients."
+      />
       <Sidebar />
       <div className="h-full w-full p-5 pb-0 flex-1 min-h-0 flex flex-col">
         <div className="relative inline-block">
