@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import Header2 from "../../components/Header2";
 import Sidebar from "../../components/Sidebar";
-import { BACKEND_DOMAIN, medicalDepartments } from "../../data/data";
-import { useState } from "react";
+import { BACKEND_DOMAIN } from "../../data/data";
+import { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
 import { useUser } from "../../hooks/useUser";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
@@ -15,11 +15,19 @@ import {
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
+interface Service {
+  _id: string;
+  name: string;
+  price: number;
+  status: string;
+}
+
 export default function CreateAppointment() {
   const navigate = useNavigate();
   const { user } = useUser();
   const [activePage, setActivePage] = useState(1);
-  const [medicalDepartment, setMedicalDepartment] = useState<string[]>([]);
+  const [medicalDepartments, setMedicalDepartment] = useState<Service[]>([]);
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
   const [selectedTime, setSelectedTime] = useState<Dayjs | null>(dayjs());
   const [error, setError] = useState("");
@@ -28,7 +36,7 @@ export default function CreateAppointment() {
     e.preventDefault();
 
     const appointmentData = {
-      medicalDepartment,
+      medicalDepartment: selectedServices,
       date: selectedDate ? selectedDate.format("YYYY-MM-DD") : null,
       time: selectedTime ? selectedTime.format("HH:mm") : null,
       email: user?.email,
@@ -66,6 +74,22 @@ export default function CreateAppointment() {
       }
     }
   };
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await axios.get(`${BACKEND_DOMAIN}/api/v1/services`, {
+          withCredentials: true,
+        });
+        setMedicalDepartment(response.data.data);
+      } catch (error) {
+        console.error("Failed to fetch services:", error);
+        setError("Failed to load services. Please try again later.");
+      }
+    };
+
+    fetchServices();
+  }, []);
 
   return (
     <main className="flex flex-col w-full h-screen font-roboto pt-18 pl-56 bg-bg-color text-zinc-900">
@@ -170,24 +194,22 @@ export default function CreateAppointment() {
                   <div key={i} className="flex flex-row items-center gap-2">
                     <input
                       type="checkbox"
-                      name="medicalDepartment"
-                      value={department.label}
-                      checked={medicalDepartment.includes(department.label)}
+                      name="services"
+                      value={department.name}
+                      checked={selectedServices.includes(department.name)}
                       onChange={(e) => {
                         const value = e.target.value;
-                        if (medicalDepartment.includes(value)) {
-                          setMedicalDepartment(
-                            medicalDepartment.filter((d) => d !== value),
+                        if (selectedServices.includes(value)) {
+                          setSelectedServices(
+                            selectedServices.filter((d) => d !== value),
                           );
-                        } else {
-                          if (medicalDepartment.length < 3) {
-                            setMedicalDepartment([...medicalDepartment, value]);
-                          }
+                        } else if (selectedServices.length < 3) {
+                          setSelectedServices([...selectedServices, value]);
                         }
                       }}
-                      id={department.name}
+                      id="services"
                     />
-                    <label htmlFor={department.name}>{department.label}</label>
+                    <label htmlFor={department.name}>{department.name}</label>
                   </div>
                 ))}
               </div>
