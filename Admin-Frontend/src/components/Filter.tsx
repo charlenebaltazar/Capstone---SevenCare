@@ -17,7 +17,7 @@ const statusOption = [
   { value: "Pending", label: "Pending" },
   { value: "Completed", label: "Completed" },
   { value: "No Show", label: "No Show" },
-  { value: "Cancel", label: "Cancelled" },
+  { value: "Declined", label: "Declined" },
   { value: "Approved", label: "Ongoing" },
 ];
 
