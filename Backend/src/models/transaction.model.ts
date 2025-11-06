@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { ITransactions } from "../@types/interfaces";
+import { ITransactions } from "../@types/interface";
 
 const TransactionSchema = new mongoose.Schema<ITransactions>({
   appointmentId: {
